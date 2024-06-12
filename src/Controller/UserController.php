@@ -295,100 +295,12 @@ class UserController extends AbstractController
                 $json->setData(['result' => 'success', 'data' => $userdata]);
             }
         }
-        //$json->setData(['result' => $data['email']]);
         return $json;
     }
 
     /* Login de usuario */
     /* En función de su Rol, devolverá los datos de un usuario común o de una organización,
        O solo los del usuario, porque será un administrador */
-
-    #[Route(path: '/login', name: 'login', methods: ['POST'])]
-    public function loginUser(Request $request, EntityManagerInterface $entityManager, JWTTokenManagerInterface $jwtManager, LoggerInterface $logger): JsonResponse
-    {
-        //HACER PRUEBAS EN POSTMAN
-        $json = new JsonResponse();
-
-        $jwtUserToken = null;
-
-
-        $email = $request->request->get('email');
-        $password = $request->request->get('password');
-
-        $userFound = $entityManager->getRepository(Users::class)->findBy(['email' => $email]);
-        $userFoundData = null;
-
-        if (empty($userFound)) {
-            $json->setData(['result' => 'failure', 'message' => 'Usuario No encontrado']);
-        } else {
-            foreach ($userFound as $user) {
-                $userFoundData = $user;
-                $passwordFound = $userFoundData->getPassword();
-            }
-            if (password_verify($password, $passwordFound)) {
-                $userDataToken = new CustomCommonUser($userFoundData->getEmail(), [$userFoundData->getRol()]);
-
-                $jwtUserToken = $jwtManager->create($userDataToken);
-                /* if ($userFoundData->getRol() == 1) {
-                    $message = "Bienvenido, Usuario Común de nombre " . $userFoundData->getCommonUsers()->getName() . " " . $userFoundData->getCommonUsers()->getSurname() . "";
-                    $response = [
-                        'message' => $message,
-                        'token' => $jwtUserToken,
-                        'id-user' => $userFoundData->getId(),
-                        'nick' => $userFoundData->getNick(),
-                        'password' => $password,
-                        'coded_password' => $passwordFound,
-                        'email' => $userFoundData->getEmail(),
-                        'name' => $userFoundData->getCommonUsers()->getName(),
-                        'surname' => $userFoundData->getCommonUsers()->getSurname(),
-                        'rol' => $userFoundData->getRol(),
-                        'imageFormat' => $userFoundData->getAvatarimageformat(),
-                    ];
-                } else if ($userFoundData->getRol() == 2) {
-                    $message = "Bienvenido, Organización de nombre " . $userFoundData->getOrganizations()->getOrganizationName();
-                    $response = [
-                        'message' => $message,
-                        'token' => $jwtUserToken,
-                        'id-user' => $userFoundData->getId(),
-                        'nick' => $userFoundData->getNick(),
-                        'password' => $password,
-                        'coded_password' => $passwordFound,
-                        'email' => $userFoundData->getEmail(),
-                        'name' => $userFoundData->getOrganizations()->getOrganizationName(),
-                        'description' => $userFoundData->getOrganizations()->getOrganizationDescription(),
-                        'rol' => $userFoundData->getRol(),
-                        'imageFormat' => $userFoundData->getAvatarimageformat(),
-                    ];
-                } else {
-                    $message = "Bienvenido, Administrador " . $userFoundData->getNick();
-                    $response = [
-                        'message' => $message,
-                        'token' => $jwtUserToken,
-                        'id-user' => $userFoundData->getId(),
-                        'nick' => $userFoundData->getNick(),
-                        'password' => $password,
-                        'coded_password' => $passwordFound,
-                        'email' => $userFoundData->getEmail(),
-                        'rol' => $userFoundData->getRol(),
-                        'imageFormat' => $userFoundData->getAvatarimageformat(),
-                    ];
-                } */
-                var_dump("User:" . $userDataToken->getUserIdentifier());
-
-
-                $json->setData(['result' => 'success', 'data' => $jwtUserToken]);
-                /* A partir de aquí, devolver todos los datos del usuario logueado */
-                /* Los datos serán de distinta estructura, pero como ambos tendrán el atributo
-                   rol, el Cliente se encargará de gestionar la estructura de la página
-                   resultante */
-            } else {
-                $json->setData(['result' => 'failure', 'message' => 'Contraseña incorrecta']);
-            }
-        }
-
-
-        return $json;
-    }
 
     #[Route(path: '/organizations', name: 'organization_list', methods: ['GET'])]
     public function organizationsList(EntityManagerInterface $entityManager): JsonResponse
@@ -495,14 +407,6 @@ class UserController extends AbstractController
 
         return $json;
     }
-    //$json->setData(['result' => $data['email']]);
-
-
-
-    /**/
-
-    //Ruta para hacer Login
-    //Ruta para una organización en concreto
 
     //Ruta para añadir nuevo usuario común
     /**/
